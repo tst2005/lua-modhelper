@@ -221,8 +221,11 @@ I think a new way should :
  * argument #3 : something about custom meta handler
 
 
+My different kind of modules
+============================
+
 lua micro-module
-================
+----------------
 
 This module is usually the most minimal code possible : return a single function, nothing more.
 
@@ -231,10 +234,8 @@ It is usefull to split the code in lot of part to be able to choose which one is
 Main idea: a module definition should focused on the callable stuff.
 
 
-lua mini-module
-===============
-
-## like a simple table
+lua simple table mini-module
+----------------------------
 
 Return nothing callable, but an additionnal content (a table)
 ```lua
@@ -245,9 +246,10 @@ local M = { foo = foo }
 return nil, M
 ```
 
-## a callable table
+lua callable table mini-module
+------------------------------
 
-like a lua module except all meta information, and meta stuff should be done my a module helper
+like a lua module except all meta information, and meta stuff should be done by the module helper
 
 mini-module should only return a table like :
 ```
@@ -258,6 +260,40 @@ local M = { foo = foo }
 return foo, M
 ```
 
+How to integrate the modhelper
+==============================
+
+See the current experimental code : [modhelper.lua](poc/modhelper.lua)
+
+With module changes
+-------------------
+
+Before: 
+```lua
+local function foo(self, x)
+  return "foo: "..tostring(x)
+end
+local M = { foo = foo }
+return M
+```
+After:
+```lua
+local function foo(self, x)
+  return "foo: "..tostring(x)
+end
+local M = { foo = foo }
+return require "modhelper"(M)
+```
+
+Without module change
+---------------------
+
+In sandbox I'm able to implement a custom `require` that integrate a small change.
+* catch all the module's returned value
+* pass them all to the modhelper
+* store the returned result to the `package.loaded` and return it to the `require` caller...
+
+
 
 lua embedding approach
 ======================
@@ -267,18 +303,15 @@ I experiment a new approch to build module.
  * Fill the module information (more the one of the project) separatly
  * use some util to build the final result!
 
-lua module helper/proxy
-=======================
 
-TODO: the helper must return a module on a compatible format with older module definition.
+Advanced goal
+=============
 
+package managment
+-----------------
 
-experimental code for module helper
-===================================
+where/how to store pakcage meta info
 
-
-Advanced target
-===============
 
 unloading capability
 --------------------
