@@ -258,7 +258,7 @@ lua callable table mini-module
 like a lua module except all meta information, and meta stuff should be done by the module helper
 
 mini-module should only return a table like :
-```
+```lua
 local function foo(self, x)
   return "foo: "..tostring(x)
 end
@@ -309,8 +309,8 @@ if M is a table
 ```lua
 return modhelper( M )
 ```
-equal to 
-```lua
+equal to
+``` lua
 return modhelper( nil, M, M)
 ```
 
