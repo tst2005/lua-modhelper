@@ -212,7 +212,7 @@ I started to put name on some told way to define modules.
 
 
 The idea
---------
+========
 
 When you (dev) write a module code, stay focused on your needs.
 I think a new way should :
