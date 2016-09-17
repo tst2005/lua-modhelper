@@ -4,15 +4,17 @@ What is the interest to have modules ?
 Seriously ? Ok.
 A better structured and readable code! Like [any other programmation languages]().
 
+
 What is the interest to avoid module ?
 ======================================
 
 What is this question ?! Hmm.... ok!
 
-There is some limited kind of situation where you want to have a standalone program without librarie, module, or any kind of external dependencies.
-In my case I got :
+There is some limited kind of situation where you want to have a standalone program without library, module, or any kind of external dependencies.
+In my case I got this situation on :
  * A old game that support lua but only one file to load.
- * When you want to make some tool to automated task (like shell script) and you want deploy it by coping the script, no more.
+ * When you want to make some tool for automated task (something like shell script) and you want deploy it by coping the script, no more.
+
 
 What is currently a lua module ?
 ================================
@@ -35,8 +37,7 @@ Some convention exists
  * `_NAME`, `_M`, `_PACKAGE` : introduce with the [deprecated module function](http://www.lua.org/manual/5.1/manual.html#pdf-module) ; maybe also the [_VERSION](http://www.lua.org/manual/5.1/manual.html#pdf-_VERSION)
  * `package`, `version`, `source.{url,tag,dir}`, `description.{summary,detailed,homepage,maintainer,license}`, `dependecies` : [luarocks package](https://github.com/keplerproject/luarocks/wiki/Rockspec-format)
 
-but no one is mandatory...
-
+but no one is offical or becomes mandatory.
 
 
 Current Lua module returned values
@@ -203,8 +204,8 @@ The maybe better way
 I think we should have a hybride module definition, and automated tool to setup modules...
 
 I started to put name on some told way to define modules.
- * single function value : a `micro module`
- * single table or callable table value : a `mini module`
+ * single function value : a `micro-module`
+ * single table or callable table value : a `mini-module`
  * a full filled table (with all version, license, author, ... fields filled) : a `module`
  * a boolean value : something to fix!
  * other value : I don't know for now...
@@ -220,17 +221,17 @@ I think a new way should :
  * argument #3 : something about custom meta handler
 
 
-lua micro module
+lua micro-module
 ================
 
 This module is usually the most minimal code possible : return a single function, nothing more.
 
 It is usefull to split the code in lot of part to be able to choose which one is really needed and which one should be dropped.
 
-Main idea: return something callable.
+Main idea: a module definition should focused on the callable stuff.
 
 
-lua mini module
+lua mini-module
 ===============
 
 ## like a simple table
@@ -248,7 +249,7 @@ return nil, M
 
 like a lua module except all meta information, and meta stuff should be done my a module helper
 
-mini module should only return a table like :
+mini-module should only return a table like :
 ```
 local function foo(self, x)
   return "foo: "..tostring(x)
@@ -257,26 +258,33 @@ local M = { foo = foo }
 return foo, M
 ```
 
+
 lua embedding approach
 ======================
 
 I experiment a new approch to build module.
- * split each parts in `micro module`
- * Fill the module information separatly
+ * split each parts in `micro-module` or `mini-module`
+ * Fill the module information (more the one of the project) separatly
  * use some util to build the final result!
-
-
-unloading capability
---------------------
-
-The only way I found...
-
 
 lua module helper/proxy
 =======================
 
+TODO: the helper must return a module on a compatible format with older module definition.
 
 
 experimental code for module helper
 ===================================
+
+
+Advanced target
+===============
+
+unloading capability
+--------------------
+
+The only way I found is to split almost each function, load them on a wrapper, a kind of meta-module ... and setup a way to remove/drop part!
+TODO: spoke about the reason and take penligth as sample.
+
+
 
