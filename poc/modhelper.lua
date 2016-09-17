@@ -1,7 +1,11 @@
 
 -- this helper should be use inside a `require` implementation to catch new module return values to build an uniq value to store in the package.loaded table.
+-- or used at the end of a module
+-- local M = {}
+-- ... stuff ...
+-- return require "modhelper"(M)
 
-local makemodfrom(callable, usual, meta)
+local function newmod(callable, usual, meta)
 	if usual==nil and meta==nil and type(callable)=="table" then
 		usual = callable
 		meta = callable
@@ -31,21 +35,31 @@ local makemodfrom(callable, usual, meta)
 end
 
 
+local function fshift(f)
+	return function(_self, ...) return f(...) end
+end
+local M = {
+	newmod = newmod,
+	fshift = fshift,
+}
+return newmod(fshift(newmod), M, nil)
+
+
+
 -- # old module compatibility
 
--- makemodfrom(t1, nil, nil)	=> equals makemodfrom( nil, t1, t1)
--- makemodfrom(true, nil, nil)	=> empty table module
+-- newmod(t1, nil, nil)	=> equals newmod( nil, t1, t1)
+-- newmod(true, nil, nil)	=> empty table module
 
 -- # new module support
 
--- makemodfrom(nil|<boolean>|<number>, nil, nil)	=> empty table module
--- makemodfrom(f1, nil, nil)	=> callable empty table module (#micro-module)
--- makemodfrom(f1, t1, nil)	=> callable table module (#mini-module)
--- makemodfrom(f1, t1, t2)	=> callable table module with custom meta (#mini-module)
+-- newmod(nil|<boolean>|<number>, nil, nil)	=> empty table module
+-- newmod(f1, nil, nil)	=> callable empty table module (#micro-module)
+-- newmod(f1, t1, nil)	=> callable table module (#mini-module)
+-- newmod(f1, t1, t2)	=> callable table module with custom meta (#mini-module)
 
--- makemodfrom(f1, t1, t1)	=> t1 should contains both usual and meta methods the meta __call will be f1
+-- newmod(f1, t1, t1)	=> t1 should contains both usual and meta methods the meta __call will be f1
 
--- makemodfrom(t1, t1, t1)	=> the first argument is ignored
+-- newmod(t1, t1, t1)	=> the first argument is ignored
 
--- makemodfrom(f1, nil, t2)	=> like makemodfrom(f1, {}, t2) => callable table module with custom meta method (but no method)
-
+-- newmod(f1, nil, t2)	=> like newmod(f1, {}, t2) => callable table module with custom meta method (but no method)
