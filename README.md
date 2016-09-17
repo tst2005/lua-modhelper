@@ -220,6 +220,14 @@ I think a new way should :
  * argument #2 : an table (to access to all content)
  * argument #3 : something about custom meta handler
 
+Have some special behavior to manage compat.
+```lua
+return modhelper( M )
+--equal to
+return modhelper( nil, M, M)
+```
+
+by this way my own `micro-module` should return the
 
 My different kind of modules
 ============================
@@ -233,6 +241,12 @@ It is usefull to split the code in lot of part to be able to choose which one is
 
 Main idea: a module definition should focused on the callable stuff.
 
+```lua
+local function foo(self, x)
+  return "foo: "..tostring(x)
+end
+return foo
+```
 
 lua simple table mini-module
 ----------------------------
@@ -243,7 +257,7 @@ local function foo(self, x)
   return "foo: "..tostring(x)
 end
 local M = { foo = foo }
-return nil, M
+return M
 ```
 
 lua callable table mini-module
@@ -293,7 +307,15 @@ In sandbox I'm able to implement a custom `require` that integrate a small chang
 * pass them all to the modhelper
 * store the returned result to the `package.loaded` and return it to the `require` caller...
 
+Reminding technical point to see
+================================
 
+ * [ ] Find a easy way/convention to keep or drop the first argument for the module `__call` function
+ * [ ] What about compat of current module build with metatable ? should we dig into the metatable ?!
+ * [ ] should we add a #4 argument as config to define behavior setting ?
+ * [ ] what about userdata catching ?!
+ * [ ] how to setup a way to easily check if a module is a "new one"
+ * [ ] find a name for my catched module better than "new one" ;)
 
 lua embedding approach
 ======================
