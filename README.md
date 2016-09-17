@@ -25,15 +25,14 @@ Lot of (old) module code use the `module` function introduce in [Lua 5.1](https:
 
 ## 2) The current module definition
 
-i#FILLME: the link page
-The current [module definition]() is done with :
+The current [module definition](http://lua-users.org/wiki/ModulesTutorial) is done with :
  * a separated file where the name and path will be used to load it
  * the content of the module end by a return of a single value. This value will the got as result of a `require("modulename")`
 
-#FILLME: the link page(s) ?
-Some convention exists,
-like `VERSION`, `AUTHOR`, `LICENSE`, with or without `_` prefix, 
-but nothing is mandatory at all.
+Some convention exists
+ * `name` , `version`, `license`, `homepage`, `description` : [ulua](http://ulua.io/specs.html)
+ * `_VERSION`, `_DESCRIPTION`, `_URL`, `_LICENSE` : [kikito/middleclass](https://github.com/kikito/middleclass/blob/master/middleclass.lua#L2-L5)
+but no one is mandatory...
 
 
 Current Lua module returned values
