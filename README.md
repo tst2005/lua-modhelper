@@ -19,14 +19,13 @@ What is currently a lua module ?
 
 I see to way to define a lua module.
 
-1) The old module definition
+## 1) The old module definition
 
-Lot of (old) module code (done in Lua 5.0 - 5.1 ?) use the [deprecated]() `module` function.
-#FILLME: the link!
+Lot of (old) module code use the `module` function introduce in [Lua 5.1](https://tst2005.github.io/manual/lua/5.1/manual.html#pdf-module), depreated in [Lua 5.2](https://tst2005.github.io/manual/lua/5.2/manual.html#8.2).
 
-2) The current module definition
+## 2) The current module definition
 
-#FILLME: the link page
+i#FILLME: the link page
 The current [module definition]() is done with :
  * a separated file where the name and path will be used to load it
  * the content of the module end by a return of a single value. This value will the got as result of a `require("modulename")`
@@ -40,12 +39,14 @@ but nothing is mandatory at all.
 Current Lua module returned values
 ==================================
 
-Usualy it is a table.
+Usualy, it is a table!
 
 A simple table value
 --------------------
 
-Because it is as easy to define as easy to use.
+Because :
+ * it is as easy to define as easy to use.
+ * you can store lot of functions inside.
 
 * file "foo.lua":
 ```lua
@@ -176,21 +177,25 @@ Some usual current module definition can not support to store more information.
 Need a new module definition ?
 ==============================
 
-Not at all ! A returned value and a `require` function is enough to build module.
+Not at all ! Stop breaking existing module definition !
+A returned value and a `require` function is enough to build some better stuff and stay compatible with current way to do.
+
 
 Need some additionnal specs and helper to make powerfull module ?
 =================================================================
 
 I think so!
 
-The wrond way
+
+My wrond way
 -------------
 
-I tried to follow the idea of each lua module should be a table !
+I tried to follow the idea : each lua module should be a table with all appropriate fields filled !
 But defining all the fields, all the time, for all modules is a pain!
 
+
 The maybe better way
-------------------
+--------------------
 
 I think we should have a hybride module definition, and automated tool to setup modules...
 
@@ -242,8 +247,22 @@ return foo, M
 lua embedding approach
 ======================
 
+I experiment a new approch to build module.
+ * split each parts in `micro module`
+ * Fill the module information separatly
+ * use some util to build the final result!
+
+
+unloading capability
+--------------------
+
+The only way I found...
+
+
 lua module helper/proxy
 =======================
+
+
 
 experimental code for module helper
 ===================================
