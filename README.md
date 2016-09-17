@@ -2,7 +2,7 @@ What is the interest to have modules ?
 ======================================
 
 Seriously ? Ok.
-A better structured and readable code! Like lot of other programmation languages.
+A better structured and readable code! Like [any other programmation languages]().
 
 What is the interest to avoid module ?
 ======================================
@@ -17,7 +17,7 @@ In my case I got :
 What is currently a lua module ?
 ================================
 
-I see to way to define a lua module.
+I see to way to [define a lua module](http://lua-users.org/wiki/AlternativeModuleDefinitions)
 
 ## 1) The old module definition
 
@@ -32,7 +32,10 @@ The current [module definition](http://lua-users.org/wiki/ModulesTutorial) is do
 Some convention exists
  * `name` , `version`, `license`, `homepage`, `description` : [ulua](http://ulua.io/specs.html)
  * `_VERSION`, `_DESCRIPTION`, `_URL`, `_LICENSE` : [kikito/middleclass](https://github.com/kikito/middleclass/blob/master/middleclass.lua#L2-L5)
+ * `_NAME`, `_M`, `_PACKAGE` : introduce with the [deprecated module function](http://www.lua.org/manual/5.1/manual.html#pdf-module) ; maybe also the [_VERSION](http://www.lua.org/manual/5.1/manual.html#pdf-_VERSION)
+
 but no one is mandatory...
+
 
 
 Current Lua module returned values
