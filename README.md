@@ -220,14 +220,6 @@ I think a new way should :
  * argument #2 : an table (to access to all content)
  * argument #3 : something about custom meta handler
 
-Have some special behavior to manage compat.
-```lua
-return modhelper( M )
---equal to
-return modhelper( nil, M, M)
-```
-
-by this way my own `micro-module` should return the
 
 My different kind of modules
 ============================
@@ -279,6 +271,7 @@ How to integrate the modhelper
 
 See the current experimental code : [modhelper.lua](poc/modhelper.lua)
 
+
 With module changes
 -------------------
 
@@ -306,6 +299,21 @@ In sandbox I'm able to implement a custom `require` that integrate a small chang
 * catch all the module's returned value
 * pass them all to the modhelper
 * store the returned result to the `package.loaded` and return it to the `require` caller...
+
+
+Backward compat
+---------------
+
+modhelper has a special behavior to support older module definition.
+if M is a table
+```lua
+return modhelper( M )
+```
+equal to 
+```lua
+return modhelper( nil, M, M)
+```
+
 
 Reminding technical point to see
 ================================
