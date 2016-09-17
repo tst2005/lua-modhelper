@@ -33,6 +33,7 @@ Some convention exists
  * `name` , `version`, `license`, `homepage`, `description` : [ulua](http://ulua.io/specs.html)
  * `_VERSION`, `_DESCRIPTION`, `_URL`, `_LICENSE` : [kikito/middleclass](https://github.com/kikito/middleclass/blob/master/middleclass.lua#L2-L5)
  * `_NAME`, `_M`, `_PACKAGE` : introduce with the [deprecated module function](http://www.lua.org/manual/5.1/manual.html#pdf-module) ; maybe also the [_VERSION](http://www.lua.org/manual/5.1/manual.html#pdf-_VERSION)
+ * `package`, `version`, `source.{url,tag,dir}`, `description.{summary,detailed,homepage,maintainer,license}`, `dependecies` : [luarocks package](https://github.com/keplerproject/luarocks/wiki/Rockspec-format)
 
 but no one is mandatory...
 
@@ -179,7 +180,7 @@ Some usual current module definition can not support to store more information.
 Need a new module definition ?
 ==============================
 
-Not at all ! Stop breaking existing module definition !
+No,Not at all ! We should stop breaking existing module definition !
 A returned value and a `require` function is enough to build some better stuff and stay compatible with current way to do.
 
 
@@ -207,6 +208,16 @@ I started to put name on some told way to define modules.
  * a full filled table (with all version, license, author, ... fields filled) : a `module`
  * a boolean value : something to fix!
  * other value : I don't know for now...
+
+
+The idea
+--------
+
+When you (dev) write a module code, stay focused on your needs.
+I think a new way should :
+ * argument #1 : something callable
+ * argument #2 : an table (to access to all content)
+ * argument #3 : something about custom meta handler
 
 
 lua micro module
