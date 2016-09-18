@@ -2,7 +2,7 @@ What is the interest to have modules ?
 ======================================
 
 Seriously ? Ok.
-A better structured and readable code! Like [any other programmation languages]().
+A better structured and readable code! Like [any other programmation languages](https://en.wikipedia.org/wiki/Modular_programming).
 
 
 What is the interest to avoid module ?
@@ -10,10 +10,10 @@ What is the interest to avoid module ?
 
 What is this question ?! Hmm.... ok!
 
-There is some limited kind of situation where you want to have a standalone program without library, module, or any kind of external dependencies.
-In my case I got this situation on :
- * A old game that support lua but only one file to load.
- * When you want to make some tool for automated task (something like shell script) and you want deploy it by coping the script, no more.
+There is some situations where you want to have a standalone program without library, module, or any external dependency.
+In my case I got this situation :
+ * On an old game that support lua but only one file to load.
+ * When I want to make some tool for automated tasks (like shell script but in lua) and you want deploy it by coping the script, no more.
 
 
 What is currently a lua module ?
@@ -23,13 +23,11 @@ I see to way to [define a lua module](http://lua-users.org/wiki/AlternativeModul
 
 ## 1) The old module definition
 
-Lot of (old) module code use the `module` function introduce in [Lua 5.1](https://tst2005.github.io/manual/lua/5.1/manual.html#pdf-module), depreated in [Lua 5.2](https://tst2005.github.io/manual/lua/5.2/manual.html#8.2).
+Lot of (old) module code use the `module` function introduce in (Lua 5.0 ?) [Lua 5.1](https://tst2005.github.io/manual/lua/5.1/manual.html#pdf-module), depreated in [Lua 5.2](https://tst2005.github.io/manual/lua/5.2/manual.html#8.2).
 
 ## 2) The current module definition
 
-The current [module definition](http://lua-users.org/wiki/ModulesTutorial) is done with :
- * a separated file where the name and path will be used to load it
- * the content of the module end by a return of a single value. This value will the got as result of a `require("modulename")`
+The current [module definition](http://lua-users.org/wiki/ModulesTutorial) is done by a return of a single value. This value will be put in cache and return by the `require("modulename")`.
 
 Some convention exists
  * `name` , `version`, `license`, `homepage`, `description` : [ulua](http://ulua.io/specs.html)
@@ -37,7 +35,7 @@ Some convention exists
  * `_NAME`, `_M`, `_PACKAGE` : introduce with the [deprecated module function](http://www.lua.org/manual/5.1/manual.html#pdf-module) ; maybe also the [_VERSION](http://www.lua.org/manual/5.1/manual.html#pdf-_VERSION)
  * `package`, `version`, `source.{url,tag,dir}`, `description.{summary,detailed,homepage,maintainer,license}`, `dependecies` : [luarocks package](https://github.com/keplerproject/luarocks/wiki/Rockspec-format)
 
-but no one is offical or becomes mandatory.
+but none of them are offical or becomes mandatory.
 
 
 Current Lua module returned values
@@ -49,7 +47,7 @@ A simple table value
 --------------------
 
 Because :
- * it is as easy to define as easy to use.
+ * it is easy to define and easy to use.
  * you can store lot of functions inside.
 
 * file "foo.lua":
@@ -148,12 +146,17 @@ print(foo.foo("FOO")) -- print: foo: FOO
 ```
 
 
+A nil value
+===========
+
+The `nil` module returned value is replaced by a boolean `true` value.
+
+
 A boolean value
 ===============
 
-If a module return `true` this value is store.
-It is also the case when the module returns anything (`nil`) or `false`(?).
-It is usualy the case when you use a quiet old module that returns anything.
+If a module return `true` or `false` this value is store.
+It is usualy the case when you use an old module that use the deprecated `module` function and returns anything.
 
 
 Any other value
@@ -191,15 +194,15 @@ Need some additionnal specs and helper to make powerfull module ?
 I think so!
 
 
-My wrond way
+My wrong way
 -------------
 
 I tried to follow the idea : each lua module should be a table with all appropriate fields filled !
 But defining all the fields, all the time, for all modules is a pain!
 
 
-The maybe better way
---------------------
+My better way
+-------------
 
 I think we should have a hybride module definition, and automated tool to setup modules...
 
@@ -224,7 +227,7 @@ I think a new way should :
 My different kind of modules
 ============================
 
-lua micro-module
+Lua micro-module
 ----------------
 
 This module is usually the most minimal code possible : return a single function, nothing more.
@@ -240,7 +243,7 @@ end
 return foo
 ```
 
-lua simple table mini-module
+Lua simple table mini-module
 ----------------------------
 
 Return nothing callable, but an additionnal content (a table)
@@ -252,7 +255,7 @@ local M = { foo = foo }
 return M
 ```
 
-lua callable table mini-module
+Lua callable table mini-module
 ------------------------------
 
 like a lua module except all meta information, and meta stuff should be done by the module helper
@@ -318,6 +321,7 @@ return modhelper( nil, M, M)
 Reminding technical point to see
 ================================
 
+ * [ ] should we attached a `NOP` function to each modules to allow call ?
  * [ ] Find a easy way/convention to keep or drop the first argument for the module `__call` function
  * [ ] What about compat of current module build with metatable ? should we dig into the metatable ?!
  * [ ] should we add a #4 argument as config to define behavior setting ?
@@ -325,7 +329,27 @@ Reminding technical point to see
  * [ ] how to setup a way to easily check if a module is a "new one"
  * [ ] find a name for my catched module better than "new one" ;)
 
-lua embedding approach
+
+Summary of think
+================
+
+Support multiple ways to define a module: from the easiest way (because a dev primary think about his code, not how to package it) to the most complexe.
+Try to got an unified module format when loaded : something callable, something indexable, something with package informations.
+
+
+| modhelper | -             | return value   | callable | indexable | need setmeta | need getmeta | can have pkg info |
+| --------- | ------------- |:--------------:| --------:| ---------:| ------------:| ------------:| -----------------:|
+| without   | micro-module  | function       | **yes**  | no        | no           | no           | no                |
+| without   | mini-module 1 | simple table   | no       | **yes**   | no           | no           | yes               |
+| without   | mini-module 2 | callable table | **yes**  | **yes**   | **yes**      | maybe        | yes               |
+| without   | -             | boolean        | no       | no        | no           | no           | no                |
+| with      | micro-module  | function       | **yes**  | **yes**   | no           | no           | yes               |
+| with      | mini-module 1 | simple table   | **yes**  | **yes**   | no           | no           | yes               |
+| with      | mini-module 2 | callable table | **yes**  | **yes**   | no           | no           | yes               |
+| with      | -             | boolean        | **yes**  | **yes**   | no           | no           | yes               |
+
+
+Lua embedding approach
 ======================
 
 I experiment a new approch to build module.
@@ -337,14 +361,16 @@ I experiment a new approch to build module.
 Advanced goal
 =============
 
-package managment
+Package managment
 -----------------
 
 where/how to store pakcage meta info
 
 
-unloading capability
+Unloading capability
 --------------------
+
+My ideal behavior is to be able to load a module (like penligth) require the functions that I really need, and drop (from memory, like unloading) all the useless functions.
 
 The only way I found is to split almost each function, load them on a wrapper, a kind of meta-module ... and setup a way to remove/drop part!
 TODO: spoke about the reason and take penligth as sample.
