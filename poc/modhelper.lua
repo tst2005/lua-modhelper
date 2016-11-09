@@ -28,7 +28,7 @@ local function newmod(callable, usual, meta)
 		end
 	end
 	-- overwrite the __call if callable is provided
-	if callable type(callable)=="function" then
+	if callable and type(callable)=="function" then
 		mt.__call = callable
 	end
 	return setmetatable(M, mt)
