@@ -23,7 +23,7 @@ I see to way to [define a lua module](http://lua-users.org/wiki/AlternativeModul
 
 ## 1) The old module definition
 
-Lot of (old) module code use the `module` function introduce in (Lua 5.0 ?) [Lua 5.1](https://tst2005.github.io/manual/lua/5.1/manual.html#pdf-module), depreated in [Lua 5.2](https://tst2005.github.io/manual/lua/5.2/manual.html#8.2).
+Lot of (quiet old) modules uses the `module` function introduce in [Lua 5.1](https://tst2005.github.io/manual/lua/5.1/manual.html#pdf-module), depreated in [Lua 5.2](https://tst2005.github.io/manual/lua/5.2/manual.html#8.2).
 
 ## 2) The current module definition
 
@@ -52,11 +52,15 @@ Because :
 
 * file "foo.lua":
 ```lua
-local function foo(self, x)
-  return "foo: "..tostring(x)
+local function foo(_self, x)
+  return "foo="..tostring(x)
+end
+local function bar(x)
+  return "bar="..tostring(x)
 end
 local M = {
   foo = foo,
+  bar = bar,
 }
 return M
 ```
@@ -70,6 +74,8 @@ print(foo.foo("FOO")) -- print: foo: FOO
 
 A function value
 ----------------
+
+ * You can only define one exported function
 
 * file "foo.lua":
 ```lua
@@ -101,11 +107,14 @@ I think it the most powerfull but also the most complicated to define.
 
 * file "foo.lua":
 ```lua
-local function foo(self, x)
-  return "foo: "..tostring(x)
+local function foo(_self, x)
+  return "foo="..tostring(x)
 end
+local function bar(x)
+  return "bar="..tostring(x)
 local M = {
   foo = foo,
+  bar = bar,
 }
 setmetatable(M, {__call = foo})
 return M
@@ -116,7 +125,8 @@ return M
 local foo = require "foo"
 print(foo("FOO")) -- print: foo: FOO
 -- but also
-print(foo.foo("FOO")) -- print: foo: FOO
+print(foo:foo("FOO")) -- print: foo=FOO
+print(foo.bar("BAR")) -- print: bar=BAR
 ```
 
 
@@ -124,14 +134,18 @@ print(foo.foo("FOO")) -- print: foo: FOO
 
 * file "foo.lua":
 ```lua
-local function foo(self, x)
-  return "foo: "..tostring(x)
+local function foo(_self, x)
+  return "foo="..tostring(x)
+end
+local function bar(x)
+  return "bar="..tostring(x)
 end
 local M = {
   foo = foo,
+  bar = bar,
 }
 setmetatable(M, {__call = foo})
-M._VERSION = "0.1.0"
+M._VERSION = "0.1.0"   -- version added
 return M
 ```
 
@@ -142,7 +156,8 @@ print(foo._VERSION) -- print: 0.1.0
 
 print(foo("FOO")) -- print: foo: FOO
 -- but also
-print(foo.foo("FOO")) -- print: foo: FOO
+print(foo:foo("FOO")) -- print: foo=FOO
+print(foo.bar("BAR")) -- print: bar=BAR
 ```
 
 
@@ -266,7 +281,7 @@ local function foo(self, x)
   return "foo: "..tostring(x)
 end
 local M = { foo = foo }
-return foo, M
+return foo, M -- foo argument added
 ```
 
 How to integrate the modhelper
@@ -343,6 +358,7 @@ Try to got an unified module format when loaded : something callable, something 
 | without   | mini-module 1 | simple table   | no       | **yes**   | no           | no           | yes               |
 | without   | mini-module 2 | callable table | **yes**  | **yes**   | **yes**      | maybe        | yes               |
 | without   | -             | boolean        | no       | no        | no           | no           | no                |
+|															|
 | with      | micro-module  | function       | **yes**  | **yes**   | no           | no           | yes               |
 | with      | mini-module 1 | simple table   | **yes**  | **yes**   | no           | no           | yes               |
 | with      | mini-module 2 | callable table | **yes**  | **yes**   | no           | no           | yes               |
