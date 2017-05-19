@@ -48,19 +48,15 @@ A simple table value
 
 Because :
  * it is easy to define and easy to use.
- * you can store lot of functions inside.
+ * you can store more than only one functions inside.
 
 * file "foo.lua":
 ```lua
-local function foo(_self, x)
+local function foo(x)
   return "foo="..tostring(x)
-end
-local function bar(x)
-  return "bar="..tostring(x)
 end
 local M = {
   foo = foo,
-  bar = bar,
 }
 return M
 ```
@@ -68,8 +64,7 @@ return M
 * file "main.lua":
 ```lua
 local foo = require "foo"
-assert(foo.foo)
-print(foo.foo("FOO")) -- print: foo: FOO
+print(foo.foo("FOO")) -- print: foo=FOO
 ```
 
 A function value
@@ -79,8 +74,8 @@ A function value
 
 * file "foo.lua":
 ```lua
-local function foo(self, x)
-  return "foo: "..tostring(x)
+local function foo(x)
+  return "foo="..tostring(x)
 end
 return foo
 ```
@@ -88,7 +83,7 @@ return foo
 * file "main.lua":
 ```lua
 local foo = require "foo"
-print(foo("FOO")) -- print: foo: FOO
+print(foo("FOO")) -- print: foo=FOO
 ```
 
 
@@ -107,26 +102,22 @@ I think it the most powerfull but also the most complicated to define.
 
 * file "foo.lua":
 ```lua
-local function foo(_self, x)
+local function foo(x)
   return "foo="..tostring(x)
 end
-local function bar(x)
-  return "bar="..tostring(x)
 local M = {
   foo = foo,
-  bar = bar,
 }
-setmetatable(M, {__call = foo})
+setmetatable(M, {__call = function(_ignored_self, x) return foo(x) end})
 return M
 ```
 
 * file "main.lua":
 ```lua
 local foo = require "foo"
-print(foo("FOO")) -- print: foo: FOO
+print(foo("FOO")) -- print: foo=FOO
 -- but also
-print(foo:foo("FOO")) -- print: foo=FOO
-print(foo.bar("BAR")) -- print: bar=BAR
+print(foo.foo("FOO")) -- print: foo=FOO
 ```
 
 
@@ -134,18 +125,14 @@ print(foo.bar("BAR")) -- print: bar=BAR
 
 * file "foo.lua":
 ```lua
-local function foo(_self, x)
+local function foo(x)
   return "foo="..tostring(x)
-end
-local function bar(x)
-  return "bar="..tostring(x)
 end
 local M = {
   foo = foo,
-  bar = bar,
 }
-setmetatable(M, {__call = foo})
 M._VERSION = "0.1.0"   -- version added
+setmetatable(M, {__call = function(_ignored_self, x) return foo(x) end})
 return M
 ```
 
@@ -154,10 +141,9 @@ return M
 local foo = require "foo"
 print(foo._VERSION) -- print: 0.1.0
 
-print(foo("FOO")) -- print: foo: FOO
+print(foo("FOO")) -- print: foo=FOO
 -- but also
-print(foo:foo("FOO")) -- print: foo=FOO
-print(foo.bar("BAR")) -- print: bar=BAR
+print(foo.foo("FOO")) -- print: foo=FOO
 ```
 
 
@@ -199,7 +185,7 @@ Some usual current module definition can not support to store more information.
 Need a new module definition ?
 ==============================
 
-No,Not at all ! We should stop breaking existing module definition !
+No, Not at all ! We should stop breaking existing module definition !
 A returned value and a `require` function is enough to build some better stuff and stay compatible with current way to do.
 
 
@@ -252,10 +238,16 @@ It is usefull to split the code in lot of part to be able to choose which one is
 Main idea: a module definition should focused on the callable stuff.
 
 ```lua
-local function foo(self, x)
-  return "foo: "..tostring(x)
+local function foo(x)
+  return "foo="..tostring(x)
 end
 return foo
+```
+or
+```lua
+return function(x)
+  return "foo="..tostring(x)
+end
 ```
 
 Lua simple table mini-module
@@ -263,8 +255,8 @@ Lua simple table mini-module
 
 Return nothing callable, but an additionnal content (a table)
 ```lua
-local function foo(self, x)
-  return "foo: "..tostring(x)
+local function foo(x)
+  return "foo="..tostring(x)
 end
 local M = { foo = foo }
 return M
@@ -277,8 +269,8 @@ like a lua module except all meta information, and meta stuff should be done by 
 
 mini-module should only return a table like :
 ```lua
-local function foo(self, x)
-  return "foo: "..tostring(x)
+local function foo(x)
+  return "foo="..tostring(x)
 end
 local M = { foo = foo }
 return foo, M -- foo argument added
@@ -295,16 +287,16 @@ With module changes
 
 Before: 
 ```lua
-local function foo(self, x)
-  return "foo: "..tostring(x)
+local function foo(x)
+  return "foo="..tostring(x)
 end
 local M = { foo = foo }
 return M
 ```
 After:
 ```lua
-local function foo(self, x)
-  return "foo: "..tostring(x)
+local function foo(x)
+  return "foo="..tostring(x)
 end
 local M = { foo = foo }
 return require "modhelper"(M)
