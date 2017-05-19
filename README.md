@@ -228,8 +228,8 @@ I think a new way should :
 My different kind of modules
 ============================
 
-Lua micro-module
-----------------
+A micro-module
+--------------
 
 This module is usually the most minimal code possible : return a single function, nothing more.
 
@@ -250,8 +250,8 @@ return function(x)
 end
 ```
 
-Lua simple table mini-module
-----------------------------
+A mini-module
+-------------
 
 Return nothing callable, but an additionnal content (a table)
 ```lua
@@ -262,8 +262,8 @@ local M = { foo = foo }
 return M
 ```
 
-Lua callable table mini-module
-------------------------------
+A callable mini-module
+----------------------
 
 like a lua module except all meta information, and meta stuff should be done by the module helper
 
@@ -275,6 +275,12 @@ end
 local M = { foo = foo }
 return foo, M -- foo argument added
 ```
+
+A module
+--------
+
+The full filled callable table, returned by `modhelper`
+
 
 How to integrate the modhelper
 ==============================
@@ -383,5 +389,30 @@ My ideal behavior is to be able to load a module (like penligth) require the fun
 The only way I found is to split almost each function, load them on a wrapper, a kind of meta-module ... and setup a way to remove/drop part!
 TODO: spoke about the reason and take penligth as sample.
 
+
+
+#
+
+## one argument and old module compatibility
+
+| # | modhelper arg#1 		| arg#2	| arg#3 |    |													|
+|---|---------------------------|-------|-------|----|--------------------------------------------------------------------------------------------------|
+| 1 | table			| nil	| nil	| => | equals `modhelper( nil, t1, t1)`, see 8								|
+| 2 | true			| nil	| nil	| => | empty table module										|
+| 3 | nil/boolean/number	| nil	| nil	| => | empty table module										|
+| 4 | function			| nil	| nil	| => | callable empty table module (#micro-module)							|
+
+## new module support
+
+| # | modhelper arg#1 		| arg#2	| arg#3 |    |													|
+|---|---------------------------|-------|-------|----|--------------------------------------------------------------------------------------------------|
+| 5 | function			| table	| nil	| => | callable table module (#mini-module)								|
+| 6 | function			| t1	| t2	| => | callable table module with custom meta (#mini-module)						|
+|																			|
+| 7 | function f1		| t1	| t1	| => | t1 should contains both usual and meta methods the meta __call will be f1			|
+|																			|
+| 8 | t1/nil			| t1	| t1	| => | the first argument is ignored									|
+|																			|
+| 9 | function f1		| nil	| table t | => | like newmod(f1, {}, t) => callable table module with custom meta method (but no method)	|
 
 

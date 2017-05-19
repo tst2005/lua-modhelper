@@ -5,7 +5,16 @@
 -- ... stuff ...
 -- return require "modhelper"(M)
 
+local G = {type=type, pairs=pairs, string={sub=string.sub}, setmetatable=setmetatable}
+
+local function fshift(f)
+	return function(_self, ...) return f(...) end
+end
+
 local function newmod(callable, usual, meta)
+	local type = G.type
+	local sub = G.string.sub
+	local pairs = G.pairs
 	if usual==nil and meta==nil and type(callable)=="table" then
 		usual = callable
 		meta = callable
@@ -14,35 +23,32 @@ local function newmod(callable, usual, meta)
 	local M = {}
 	if type(usual) == "table" then
 		for k,v in pairs(usual) do
-			if type(k)=="string" and not k:find("^__") then
+			if type(k)=="string" and sub(k,1,2)~="__" then
 				M[k]=v
 			end
 		end
 	end
 	local mt = {}
+	mt.__type="module"
 	if type(meta) == "table" then
 		for k,v in pairs(meta) do
-			if type(k)=="string" and k:find("^__") then
+			if type(k)=="string" and sub(k,1,2)=="__" then
 				mt[k] = v
 			end
 		end
 	end
 	-- overwrite the __call if callable is provided
 	if callable and type(callable)=="function" then
-		mt.__call = callable
+		mt.__call = fshift(callable)
 	end
-	return setmetatable(M, mt)
+	return G.setmetatable(M, mt)
 end
 
-
-local function fshift(f)
-	return function(_self, ...) return f(...) end
-end
 local M = {
 	newmod = newmod,
 	fshift = fshift,
 }
-return newmod(fshift(newmod), M, nil)
+return newmod(newmod, M, nil)
 
 
 
